@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries';
+import { ADD_BOOK, ALL_BOOKS } from '../queries';
 
 const NewBook = () => {
 	const [title, setTitle] = useState('');
@@ -9,8 +9,17 @@ const NewBook = () => {
 	const [genre, setGenre] = useState('');
 	const [genres, setGenres] = useState([]);
 
-	const [addBook] = useMutation(ADD_BOOK, {
-		refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+	const [addBook, { error }] = useMutation(ADD_BOOK, {
+		// BUG: data returns null and any attempt to read cache returns null
+		// apollo docs say cache must contain data for all of the queries fields
+		// or it will return null
+		update(cache, res) {
+			cache.updateQuery({ query: ALL_BOOKS }, (data) => {
+				return {
+					allBooks: data.allBooks.concat(res.data.addBook),
+				};
+			});
+		},
 	});
 
 	const submit = async (event) => {
@@ -30,9 +39,15 @@ const NewBook = () => {
 		setGenre('');
 	};
 
+	if (error) {
+		console.log(error.message);
+		console.log(error.graphQLErrors);
+	}
+
 	return (
 		<div>
 			<h2>Add Book</h2>
+			{error && <p>{error.message}</p>}
 			<form onSubmit={submit}>
 				<label>Title</label>
 				<div>

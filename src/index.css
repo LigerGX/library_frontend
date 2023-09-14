@@ -61,8 +61,8 @@ main {
 }
 
 .site-header > nav > ul {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	display: flex;
+	gap: 12px;
 	justify-items: center;
 	margin: auto;
 }

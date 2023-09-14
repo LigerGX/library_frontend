@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const Header = () => {
+const Header = ({ user, handleLogout }) => {
 	return (
 		<header className="site-header">
 			<h1>
@@ -20,11 +20,39 @@ const Header = () => {
 							Books
 						</Link>
 					</li>
-					<li>
-						<Link to="/add" className="light-text">
-							Add Book
-						</Link>
-					</li>
+					{user && (
+						<li>
+							<Link to="/add" className="light-text">
+								Add Book
+							</Link>
+						</li>
+					)}
+					{!user && (
+						<li>
+							<Link to="/login" className="light-text">
+								Login
+							</Link>
+						</li>
+					)}
+					{!user && (
+						<li>
+							<Link to="/signup" className="light-text">
+								Signup
+							</Link>
+						</li>
+					)}
+					{user && (
+						<li>
+							<Link to="/recommend" className="light-text">
+								Recommend
+							</Link>
+						</li>
+					)}
+					{user && (
+						<li>
+							<button onClick={handleLogout}>Logout</button>
+						</li>
+					)}
 				</ul>
 			</nav>
 		</header>
